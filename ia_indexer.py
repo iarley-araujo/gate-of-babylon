@@ -4,7 +4,7 @@
 
 import os
 import argparse
-from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PyMuPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
@@ -22,7 +22,7 @@ def indexar_pdf(caminho_pdf):
 
     # Extração de dados do documento
     print("[*] Extraindo texto do PDF...")
-    loader = PyPDFLoader(caminho_pdf)
+    loader = PyMuPDFLoader(caminho_pdf)
     documentos = loader.load()
 
     # Processamento de chunks para o RAG

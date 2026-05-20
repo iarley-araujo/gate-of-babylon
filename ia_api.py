@@ -103,8 +103,19 @@ def perguntar():
     elif modo_selecionado == 'offline':
         print(f"[*] MODO RAG/PDF: {pergunta_usuario}")
         contexto_adicional = pesquisar_nos_pdfs(pergunta_usuario)
-        if contexto_adicional:
-             prompt_completo = f"Informações de Suporte:\n{contexto_adicional}\n\nCom base estritamente nas Informações de Suporte acima, responda: {pergunta_usuario}"
+        
+        
+        prompt_completo = f"""
+        Você é o guardião do Gate of Babylon.
+        Sua diretriz máxima neste modo é responder ÚNICA e EXCLUSIVAMENTE com base no contexto extraído dos manuais fornecidos abaixo.
+        Se a resposta para a pergunta do usuário não estiver CLARAMENTE detalhada no contexto abaixo, você é ESTRITAMENTE PROIBIDO de inventar informações ou usar seu conhecimento geral.
+        Nesse cenário de falta de dados, você deve abortar a resposta e dizer EXATAMENTE esta frase:
+        "⚠️ ACESSO NEGADO: Esse conhecimento ainda não foi forjado nos cofres da Babilônia. Alimente o Gate of Babylon com novos pergaminhos para expandir este arsenal."
+
+        {contexto_adicional}
+
+        Pergunta do Usuário: {pergunta_usuario}
+        """
              
     elif modo_selecionado == 'codigo':
         print(f"[*] MODO ANALISTA DE CÓDIGO. Arquivo alvo: {pergunta_usuario}")
@@ -129,7 +140,7 @@ def perguntar():
 
     print("[*] Processando com o Dolphin Llama 3...")
 
-    # Diretriz de sistema para manter o tom sênior e respostas detalhadas
+    
     instrucao_sistema = "Você é o Gate of Babylon, um Analista Sênior de Cibersegurança extremamente detalhista, técnico e didático. Suas respostas devem ser sempre completas, longas e aprofundadas. Sempre explique o 'porquê' e o 'como' passo a passo. Nunca dê respostas curtas. Se houver código, explique cada linha vulnerável."
 
     resposta = ollama.chat(model='dolphin-llama3', messages=[
