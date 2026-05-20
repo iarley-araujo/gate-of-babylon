@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gate of Babylon - SecMind</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --chat-bg: #1e293b;
+            --user-msg: #3b82f6;
+            --ai-msg: #334155;
+            --text-color: #f8fafc;
+            --accent: #10b981;
+            --panel-bg: #020617;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            margin: 0; 
+            display: flex; 
+            height: 100vh; 
+            flex-direction: column; 
+        }
+
+        /* --- Cabeçalho --- */
+        header { 
+            background-color: var(--panel-bg); 
+            padding: 15px 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 2px solid var(--accent); 
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        header h1 { 
+            margin: 0; 
+            font-size: 1.5rem; 
+            color: var(--accent); 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+        }
+        
+        /* --- Seletor de Módulo de Operação --- */
+        .mode-selector { 
+            display: flex; 
+            flex-wrap: wrap; 
+            background-color: var(--chat-bg); 
+            padding: 6px; 
+            border-radius: 12px; 
+            justify-content: center;
+            gap: 5px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .mode-selector label { 
+            cursor: pointer; 
+            position: relative;
+        }
+
+        .mode-selector input[type="radio"] { 
+            display: none; 
+        }
+
+        .mode-selector span { 
+            display: block;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .mode-selector label:hover span {
+            color: var(--text-color);
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .mode-selector input[type="radio"]:checked + span { 
+            background-color: var(--accent); 
+            color: #ffffff; 
+            font-weight: bold; 
+            box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);
+        }
+
+        /* --- Terminal / Chat --- */
+        #chat-box { 
+            flex-grow: 1; 
+            padding: 20px; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+        }
+
+        .message { 
+            max-width: 80%; 
+            padding: 12px 18px; 
+            border-radius: 8px; 
+            line-height: 1.5; 
+            word-wrap: break-word; 
+            white-space: pre-wrap; 
+        }
+
+        .user-message { 
+            background-color: var(--user-msg); 
+            align-self: flex-end; 
+            border-bottom-right-radius: 0; 
+        }
+
+        .ai-message { 
+            background-color: var(--ai-msg); 
+            align-self: flex-start; 
+            border-bottom-left-radius: 0; 
+            border-left: 4px solid var(--accent); 
+        }
+
+        /* --- Interface de Input --- */
+        .input-area { 
+            padding: 20px; 
+            background-color: var(--panel-bg); 
+            display: flex; 
+            gap: 10px; 
+        }
+
+        input[type="text"] { 
+            flex-grow: 1; 
+            padding: 15px; 
+            border: none; 
+            border-radius: 8px; 
+            background-color: var(--chat-bg); 
+            color: var(--text-color); 
+            font-size: 1rem; 
+            outline: none; 
+        }
+
+        input[type="text"]:focus { 
+            box-shadow: 0 0 0 2px var(--accent); 
+        }
+
+        button { 
+            padding: 0 25px; 
+            border: none; 
+            border-radius: 8px; 
+            background-color: var(--accent); 
+            color: white; 
+            font-weight: bold; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            transition: background 0.3s; 
+        }
+
+        button:hover { 
+            background-color: #059669; 
+        }
+
+        #loading { 
+            display: none; 
+            color: #94a3b8; 
+            font-size: 0.9rem; 
+            align-self: flex-start; 
+            margin-left: 20px; 
+            font-style: italic; 
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Gate of Babylon</h1>
+        
+        <div class="mode-selector">
+            <label><input type="radio" name="modo" value="ia" checked><span>IA Livre</span></label>
+            <label><input type="radio" name="modo" value="offline"><span>Ler PDFs</span></label>
+            <label><input type="radio" name="modo" value="online"><span>Agente Web</span></label>
+            <label><input type="radio" name="modo" value="codigo"><span>Auditar Código</span></label>
+            <label><input type="radio" name="modo" value="scanner"><span>Scanner Nmap</span></label>
+        </div>
+    </header>
+
+    <div id="chat-box">
+        <div class="message ai-message">Saudações, ikaro. O arsenal está online. Selecione o vetor de ataque no menu superior e faça sua requisição.</div>
+    </div>
+    
+    <div id="loading">Processando telemetria (varreduras de rede podem levar até 1 minuto)...</div>
+
+    <div class="input-area">
+        <input type="text" id="user-input" placeholder="Aguardando comando..." onkeypress="handleKeyPress(event)">
+        <button onclick="sendMessage()">Enviar</button>
+    </div>
+
+    <script>
+        // --- Configuração da API ---
+        // Altere "SEU_IP_AQUI" para o IP do host rodando o backend (ex: 192.168.1.10)
+        const API_URL = 'http://SEU_IP_AQUI:5000/perguntar';
+
+        const chatBox = document.getElementById('chat-box');
+        const userInput = document.getElementById('user-input');
+        const loadingStatus = document.getElementById('loading');
+        const radios = document.querySelectorAll('input[name="modo"]');
+
+        // Gerenciamento de Placeholders de acordo com o módulo
+        radios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                if(this.value === 'codigo') {
+                    userInput.placeholder = "Alvo da auditoria (ex: login.php, app.js)...";
+                } else if(this.value === 'scanner') {
+                    userInput.placeholder = "IP Alvo (ex: 127.0.0.1 ou 192.168.1.1)...";
+                } else {
+                    userInput.placeholder = "Aguardando comando...";
+                }
+            });
+        });
+
+        function handleKeyPress(e) { if (e.key === 'Enter') sendMessage(); }
+
+        function appendMessage(text, isUser) {
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('message');
+            msgDiv.classList.add(isUser ? 'user-message' : 'ai-message');
+            msgDiv.textContent = text;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            const modoSelecionado = document.querySelector('input[name="modo"]:checked').value;
+            appendMessage(`[Modo: ${modoSelecionado.toUpperCase()}] ${text}`, true);
+            userInput.value = '';
+            loadingStatus.style.display = 'block';
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pergunta: text, modo: modoSelecionado })
+                });
+
+                const data = await response.json();
+                loadingStatus.style.display = 'none';
+                
+                if (data.resposta) {
+                    appendMessage(data.resposta, false);
+                } else {
+                    appendMessage("[!] Erro: Resposta vazia da IA.", false);
+                }
+
+            } catch (error) {
+                loadingStatus.style.display = 'none';
+                appendMessage("[!] Erro crítico: Falha de conexão com a API. Verifique se o servidor backend está online.", false);
+            }
+        }
+    </script>
+</body>
+</html>
