@@ -1,84 +1,73 @@
-Markdown
-
 # ㉿ Gate of Babylon
 
-**Gate of Babylon** is a high-performance cybersecurity automation suite designed for local execution, ensuring total data privacy and control. The project integrates a local LLM (`dolphin-llama3` via Ollama) with a Python-based backend to process different vectors of offensive and defensive security operations.
+**Gate of Babylon** é uma suíte de automação de segurança que roda 100% local. Ela integra um LLM local (`dolphin-llama3` via Ollama) a um backend em Python para apoiar tarefas de segurança ofensiva e defensiva, sem enviar dados para serviços externos.
 
-## 🛡️ Core Features
+![Interface do Gate of Babylon](https://raw.githubusercontent.com/iarley-araujo/iarley-araujo/main/gate-of-babylon.png)
 
-* **RAG (Retrieval-Augmented Generation):** Index and query local technical documentation (PDFs) using ChromaDB for intelligent, context-aware answers.
-* **SAST (Static Analysis):** Automated code audit module to detect vulnerabilities (SQLi, XSS, insecure patterns) in PHP, JavaScript, and other languages.
-* **Web Intelligence (OSINT):** Integrated agent for automated open-source research and threat intelligence gathering via DuckDuckGo.
-* **Network Reconnaissance:** Native integration with Nmap to perform rapid port scanning and service version detection.
-* **Interface:** A clean, responsive Web UI built with HTML/JS for seamless control of all operation modes.
+## Funcionalidades
 
-## 🚀 Getting Started
+| Modo | O que faz |
+|---|---|
+| **IA Livre** | Chat com o modelo local para dúvidas de segurança |
+| **Ler PDFs (RAG)** | Indexa sua própria documentação técnica em PDF (ChromaDB) e responde com base nela |
+| **Agente Web (OSINT)** | Pesquisa em fontes abertas via DuckDuckGo e resume os resultados |
+| **Auditar Código (SAST)** | Analisa arquivos em `codigos_alvo/` em busca de SQLi, XSS e padrões inseguros |
+| **Scanner Nmap** | Executa `nmap -F -sV` em um alvo e pede ao modelo uma análise das portas e serviços |
 
-### Prerequisites
-* [Ollama](https://ollama.com/) (running locally)
-* Python 3.13+
-* Nmap installed on the host system
+## Tecnologias
 
-### Installation
-1. Clone this repository:
-   ```bash
-   git clone [https://github.com/yourusername/gate-of-babylon.git](https://github.com/yourusername/gate-of-babylon.git)
-   cd gate-of-babylon
+Python · Flask · Ollama · LangChain · ChromaDB · HuggingFace Embeddings · Nmap · HTML/JS
 
-    Create and activate a virtual environment:
-    Bash
+## Como rodar
+
+**Pré-requisitos:** [Ollama](https://ollama.com/) com o modelo `dolphin-llama3`, Python 3.11+ e Nmap instalado.
+
+```bash
+git clone https://github.com/iarley-araujo/gate-of-babylon.git
+cd gate-of-babylon
 
 python3 -m venv venv
 source venv/bin/activate
+pip install -r requirements.txt
 
-Install dependencies:
-Bash
+ollama pull dolphin-llama3
+```
 
-    pip install -r requirements.txt
+**Adicionar documentação ao RAG** (use PDFs que você tem direito de usar, como suas anotações ou documentação oficial):
 
-Configuration
+```bash
+python3 ia_indexer.py caminho/para/documento.pdf
+```
 
-Edit the index.html file to point to your backend server:
-JavaScript
+**Iniciar o servidor:**
 
-// Change this line to your server's IP address
-const API_URL = 'http://YOUR_SERVER_IP:5000/perguntar';
+```bash
+python3 ia_api.py
+```
 
-🛠️ Usage
+Depois abra `GateOfBabylon/index.html` no navegador e ajuste a constante `API_URL` para o IP da máquina onde a API está rodando.
 
-    Start the API server on your machine:
-    Bash
+## Estrutura
 
-    python3 ia_api.py
+```
+ia_api.py         # servidor Flask com os modos de operação
+ia_backend.py     # versão de linha de comando
+ia_indexer.py     # indexa PDFs no banco vetorial
+GateOfBabylon/    # interface web
+codigos_alvo/     # arquivos de exemplo para a auditoria (SAST)
+chroma_db/        # banco vetorial local (criado automaticamente)
+```
 
-    Open index.html in your browser.
+## Próximos passos
 
-    Select an operation mode (e.g., Scanner, SAST, RAG) and begin your analysis.
+- [ ] Validar o alvo do scanner (aceitar só IP/hostname) para evitar injeção de argumentos no Nmap
+- [ ] Restringir a API a `127.0.0.1` por padrão e limitar o CORS
+- [ ] Exportar relatórios das análises em Markdown
 
-📂 Project Structure
+## ⚠️ Aviso legal
 
-    ia_api.py: The core backend server (Flask).
+Projeto para fins educacionais e de segurança ética. Varrer, auditar ou atacar sistemas sem autorização é crime. Use apenas em ambientes próprios ou com permissão por escrito.
 
-    ia_indexer.py: Script to index new PDF documentation into the vector database.
+---
 
-    index.html: Web-based control panel.
-
-    chroma_db/: Local vector storage (automatically created).
-
-⚠️ Legal Disclaimer
-
-This project is for educational and ethical cybersecurity purposes only. Unauthorized scanning, auditing, or attacking of networks and systems is illegal. Always obtain written permission before performing security testing on any target.
-
-Developed by ㉿ ikaro
-
-
-### Pro Tip for GitHub:
-To ensure your repository remains clean and professional, create a file called `.gitignore` in your project root and add the following line inside it:
-
-```text
-chroma_db/
-venv/
-__pycache__/
-.env
-
-This ensures you don't upload unnecessary files or your local database (which can be very large) to GitHub. Your project is now ready to be pushed!
+Desenvolvido por **Iarley Carvalho Araujo** · [LinkedIn](https://www.linkedin.com/in/iarley-carvalho) · [Portfólio](https://springgreen-lion-117087.hostingersite.com)
